@@ -12,17 +12,17 @@ namespace NewsForUsers.Models
     {
         private NewsForUsersModel _ctx;
 
-        private UserManager<IdentityUser> _userManager;
+        private ApplicationUserManager _userManager;
 
         public AuthRepository()
         {
             _ctx = new NewsForUsersModel();
-            _userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(_ctx));
+            _userManager = new ApplicationUserManager(new CustomUserStore(_ctx));
         }
 
         public async Task<IdentityResult> RegisterUser(UserModel userModel)
         {
-            IdentityUser user = new IdentityUser
+            ApplicationUser user = new ApplicationUser
             {
                 UserName = userModel.UserName
             };
@@ -32,9 +32,9 @@ namespace NewsForUsers.Models
             return result;
         }
 
-        public async Task<IdentityUser> FindUser(string userName, string password)
+        public async Task<ApplicationUser> FindUser(string userName, string password)
         {
-            IdentityUser user = await _userManager.FindAsync(userName, password);
+            ApplicationUser user = await _userManager.FindAsync(userName, password);
 
             return user;
         }

@@ -22,10 +22,11 @@ namespace NewsForUsers.Providers
 
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
+            string userId;
             using (AuthRepository _repo = new AuthRepository())
             {
-                IdentityUser user = await _repo.FindUser(context.UserName, context.Password);
-
+                ApplicationUser user = await _repo.FindUser(context.UserName, context.Password);
+                userId = user.Id.ToString();
                 if (user == null)
                 {
                     context.SetError("invalid_grant", "The user name or password is incorrect.");
@@ -36,6 +37,7 @@ namespace NewsForUsers.Providers
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
             identity.AddClaim(new Claim("sub", context.UserName));
             identity.AddClaim(new Claim("role", "user"));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
 
             context.Validated(identity);
 

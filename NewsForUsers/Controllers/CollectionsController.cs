@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using NewsForUsers.Models;
+using Microsoft.AspNet.Identity;
+using System.Data.Entity.Migrations;
 
 namespace NewsForUsers.Controllers
 {
@@ -18,16 +20,21 @@ namespace NewsForUsers.Controllers
         private NewsForUsersModel db = new NewsForUsersModel();
 
         // GET: api/Collections
+        [Authorize]
         public IQueryable<Collection> GetCollections()
         {
-            return db.Collections;
+            int userId = this.User.Identity.GetUserId<int>();
+            return db.Collections.Where(c => c.UserId == userId);
         }
 
         // GET: api/Collections/5
         [ResponseType(typeof(Collection))]
-        public async Task<IHttpActionResult> GetCollection(int id)
+        [Route("api/collections/{name}")]
+        public async Task<IHttpActionResult> GetCollection(string name)
         {
-            Collection collection = await db.Collections.FindAsync(id);
+            int userId = this.User.Identity.GetUserId<int>();
+            
+            Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Name == name).FirstOrDefault());
             if (collection == null)
             {
                 return NotFound();
@@ -37,20 +44,26 @@ namespace NewsForUsers.Controllers
         }
 
         // PUT: api/Collections/5
+        [Authorize]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutCollection(int id, Collection collection)
+        [HttpPut]
+        [Route("api/collections/{name}")]
+        public async Task<IHttpActionResult> PutCollection(string name, Collection collection)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != collection.Id)
+            int userId = this.User.Identity.GetUserId<int>();
+            Collection collectionInDB = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Name == name).FirstOrDefault());
+            if (collectionInDB == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            db.Entry(collection).State = EntityState.Modified;
+            collection.Id = collectionInDB.Id;
+            collection.UserId = userId;
+            // db.Entry(collection).State = EntityState.Modified;
+            db.Set<Collection>().AddOrUpdate(collection);
 
             try
             {
@@ -58,7 +71,7 @@ namespace NewsForUsers.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CollectionExists(id))
+                if (!CollectionExists(collection.Id))
                 {
                     return NotFound();
                 }
@@ -72,13 +85,17 @@ namespace NewsForUsers.Controllers
         }
 
         // POST: api/Collections
+        [Authorize]
         [ResponseType(typeof(Collection))]
+        [HttpPost]
         public async Task<IHttpActionResult> PostCollection(Collection collection)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            int userId = this.User.Identity.GetUserId<int>();
+            collection.UserId = userId;
 
             db.Collections.Add(collection);
             await db.SaveChangesAsync();
@@ -88,9 +105,13 @@ namespace NewsForUsers.Controllers
 
         // DELETE: api/Collections/5
         [ResponseType(typeof(Collection))]
-        public async Task<IHttpActionResult> DeleteCollection(int id)
+        [HttpDelete]
+        [Route("api/collections/{name}")]
+        public async Task<IHttpActionResult> DeleteCollection(string name)
         {
-            Collection collection = await db.Collections.FindAsync(id);
+            int userId = this.User.Identity.GetUserId<int>();
+
+            Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Name == name).FirstOrDefault());
             if (collection == null)
             {
                 return NotFound();

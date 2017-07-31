@@ -7,13 +7,13 @@ namespace NewsForUsers.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class DeleteAttrMigration : IMigrationMetadata
+    public sealed partial class DBMigration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(DeleteAttrMigration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(DBMigration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201707271745530_DeleteAttrMigration"; }
+            get { return "201707311051353_DBMigration"; }
         }
         
         string IMigrationMetadata.Source

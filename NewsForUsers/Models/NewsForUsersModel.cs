@@ -6,7 +6,8 @@ namespace NewsForUsers.Models
     using System.Linq;
     using Microsoft.AspNet.Identity.EntityFramework;
 
-    public partial class NewsForUsersModel : IdentityDbContext<ApplicationUser>
+    public partial class NewsForUsersModel : IdentityDbContext<ApplicationUser,
+        CustomRole, int, CustomUserLogin, CustomUserRole, CustomUserClaim>
     {
         public NewsForUsersModel()
             : base("name=NewsForUsersDb")
@@ -41,11 +42,11 @@ namespace NewsForUsers.Models
                 .WithRequired(e => e.SourceType)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<IdentityUserRole>()
+            modelBuilder.Entity<CustomUserRole>()
                 .HasKey(r => new { r.UserId, r.RoleId })
                 .ToTable("AspNetUserRoles");
 
-            modelBuilder.Entity<IdentityUserLogin>()
+            modelBuilder.Entity<CustomUserLogin>()
                 .HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
                 .ToTable("AspNetUserLogins");
         }

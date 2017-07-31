@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -40,6 +41,12 @@ namespace NewsForUsers.Controllers
             }
 
             return Ok();
+        }
+        [HttpGet]
+        [Authorize]
+        public async Task<IHttpActionResult> Get()
+        {
+            return Ok("it works " + this.User.Identity.GetUserId().ToString());
         }
 
         protected override void Dispose(bool disposing)
