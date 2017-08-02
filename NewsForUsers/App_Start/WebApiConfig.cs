@@ -19,11 +19,17 @@ namespace NewsForUsers
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+            //config.Routes.MapHttpRoute(
+            //    name: "NameApi",
+            //    routeTemplate: "api/{controller}/{name}",
+            //    defaults: new { id = RouteParameter.Optional }
+            //);
             config.Routes.MapHttpRoute(
-                name: "NameApi",
-                routeTemplate: "api/{controller}/{name}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+               name: "ActionApi",
+               routeTemplate: "api/{controller}/{action}",
+               defaults: new { id = RouteParameter.Optional }
+           );
+
         }
     }
 }

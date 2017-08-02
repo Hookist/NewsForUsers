@@ -29,12 +29,11 @@ namespace NewsForUsers.Controllers
 
         // GET: api/Collections/5
         [ResponseType(typeof(Collection))]
-        [Route("api/collections/{name}")]
-        public async Task<IHttpActionResult> GetCollection(string name)
+        public async Task<IHttpActionResult> GetCollection(int id)
         {
             int userId = this.User.Identity.GetUserId<int>();
             
-            Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Name == name).FirstOrDefault());
+            Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Id == id).FirstOrDefault());
             if (collection == null)
             {
                 return NotFound();
@@ -47,15 +46,15 @@ namespace NewsForUsers.Controllers
         [Authorize]
         [ResponseType(typeof(void))]
         [HttpPut]
-        [Route("api/collections/{name}")]
-        public async Task<IHttpActionResult> PutCollection(string name, Collection collection)
+        public async Task<IHttpActionResult> PutCollection(int id, Collection collection)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             int userId = this.User.Identity.GetUserId<int>();
-            Collection collectionInDB = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Name == name).FirstOrDefault());
+            Collection collectionInDB = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Id == id).FirstOrDefault());
+
             if (collectionInDB == null)
             {
                 return NotFound();
@@ -96,27 +95,29 @@ namespace NewsForUsers.Controllers
             }
             int userId = this.User.Identity.GetUserId<int>();
             collection.UserId = userId;
+            Collection collectionInDB = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Name == collection.Name).FirstOrDefault());
+            if(collectionInDB != null)
+            {
+                return BadRequest("You already have collection with this name");
+            }
 
             db.Collections.Add(collection);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = collection.Id }, collection);
+            return Ok("CoolectionId : " + collection.Id);
         }
 
         // DELETE: api/Collections/5
         [ResponseType(typeof(Collection))]
         [HttpDelete]
-        [Route("api/collections/{name}")]
-        public async Task<IHttpActionResult> DeleteCollection(string name)
+        public async Task<IHttpActionResult> DeleteCollection(int id)
         {
             int userId = this.User.Identity.GetUserId<int>();
-
-            Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Name == name).FirstOrDefault());
+            Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Id == id).FirstOrDefault());
             if (collection == null)
             {
                 return NotFound();
             }
-
             db.Collections.Remove(collection);
             await db.SaveChangesAsync();
 

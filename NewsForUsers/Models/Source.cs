@@ -23,12 +23,12 @@ namespace NewsForUsers.Models
         [StringLength(200)]
         public string Link { get; set; }
 
-        public int SourceTypeId { get; set; }
+        //public int SourceTypeId { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<Entity> Entities { get; set; }
-        [JsonIgnore]
-        public virtual SourceType SourceType { get; set; }
+        //[JsonIgnore]
+        //public virtual SourceType SourceType { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<SourceToCollection> SourceToCollections { get; set; }

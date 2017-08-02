@@ -38,9 +38,9 @@ namespace NewsForUsers.Models
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<SourceType>()
-                .HasMany(e => e.Sources)
-                .WithRequired(e => e.SourceType)
-                .WillCascadeOnDelete(false);
+                .HasMany(e => e.Sources);
+                //.WithRequired(e => e.SourceType)
+                //.WillCascadeOnDelete(false);
 
             modelBuilder.Entity<CustomUserRole>()
                 .HasKey(r => new { r.UserId, r.RoleId })
