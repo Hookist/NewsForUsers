@@ -12,9 +12,9 @@ using System.Web.Http.Description;
 using NewsForUsers.Models;
 using Microsoft.AspNet.Identity;
 using System.Xml;
-using NewsForUsers.Readers;
 using System.ServiceModel.Syndication;
 using NewsForUsers.FeedFormaters;
+using System.Web.Http.Tracing;
 
 namespace NewsForUsers.Controllers
 {
@@ -36,6 +36,9 @@ namespace NewsForUsers.Controllers
         [Route("api/Sources/GetSourcesByCollectionId/{id}")]
         public IHttpActionResult GetSourcesByCollectionId(int id)
         {
+            Configuration.Services.GetTraceWriter().Info(
+        Request, "SourcesController", "Get feed sources in user collection");
+
             int userId = this.User.Identity.GetUserId<int>();
             Collection collection = db.Collections.Where(c => c.Id == id && c.UserId == userId).FirstOrDefault();
             if (collection == null)
@@ -63,6 +66,9 @@ namespace NewsForUsers.Controllers
         [Authorize]
         public async Task<IHttpActionResult> PostSource(int id, Source source)
         {
+            Configuration.Services.GetTraceWriter().Info(
+            Request, "SourcesController", "Add feed source to user collection");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -124,6 +130,9 @@ namespace NewsForUsers.Controllers
         [Route("api/Sources/DeleteSourceFromCollection/{collectionId}/{sourceId}")]
         public async Task<IHttpActionResult> DeleteSourceFromCollection(int collectionId, int sourceId)
         {
+            Configuration.Services.GetTraceWriter().Info(
+            Request, "SourcesController", "Delete feed source in user collection");
+
             int userId = this.User.Identity.GetUserId<int>();
             if(!await db.IsUserHasCollection(collectionId, userId))
             {
@@ -152,6 +161,9 @@ namespace NewsForUsers.Controllers
         [Route("api/Sources/GetNewsByCollectionId/{collectionId}")]
         public async Task<IHttpActionResult> GetEntities(int collectionId)
         {
+            Configuration.Services.GetTraceWriter().Info(
+           Request, "SourcesController", "Get feeds news in user collection");
+
             int userId = this.User.Identity.GetUserId<int>();
 
             if(!await db.IsUserHasCollection(collectionId, userId))
@@ -177,7 +189,7 @@ namespace NewsForUsers.Controllers
         /// Get news by collectionId and time period.
         /// </summary>
         /// <param name="collectionId">collection id</param>
-        /// <param name="period"> Start date and end date for selecting </param>
+        /// <param name="period">PeriodModel</param>
         /// <returns></returns>
         [ResponseType(typeof(IEnumerable<Entity>))]
         [Authorize]
@@ -185,6 +197,9 @@ namespace NewsForUsers.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> GetEntities(int collectionId, PeriodModel period)
         {
+            Configuration.Services.GetTraceWriter().Info(
+          Request, "SourcesController", "Get feeds news in user collection with time period");
+
             int userId = this.User.Identity.GetUserId<int>();
 
             if (!ModelState.IsValid)

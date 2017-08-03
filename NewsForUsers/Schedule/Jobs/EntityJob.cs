@@ -14,7 +14,6 @@ namespace NewsForUsers.Schedule.Jobs
         NewsForUsersModel db = new NewsForUsersModel();
         public void Execute(IJobExecutionContext context)
         {
-            Dictionary<int, DateTimeOffset?> col = new Dictionary<int, DateTimeOffset?>();
             List<Source> sources = db.Sources.ToList();
             if (sources == null)
                 return;

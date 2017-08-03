@@ -27,7 +27,7 @@ namespace NewsForUsers.Controllers
         /// <summary>
         /// Registration new user
         /// </summary>
-        /// <param name="userModel">new user information</param>
+        /// <param name="userModel">UserModel</param>
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
@@ -48,6 +48,20 @@ namespace NewsForUsers.Controllers
                 return errorResult;
             }
 
+            return Ok();
+        }
+
+        /// <summary>
+        /// Get Token for log in user
+        /// Data pass via application/x-www-form-urlencoded
+        /// </summary>
+        /// <param name="userModel">LoginUserModel</param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("api/Account/token")]
+        public IHttpActionResult GetToken(LoginUserModel userModel)
+        {
             return Ok();
         }
 

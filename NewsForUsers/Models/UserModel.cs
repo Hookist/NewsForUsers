@@ -23,4 +23,24 @@ namespace NewsForUsers.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
+
+    public class LoginUserModel
+    {
+        public LoginUserModel()
+        {
+            grant_type = "password";
+        }
+        [Required]
+        [Display(Name = "grant_type")]
+        public string grant_type { get; set; }
+
+        [Required]
+        [Display(Name = "User name")]
+        public string UserName { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+    }
 }

@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NewsForUsers</name>
+    </assembly>
+    <members>
+        <member name="T:NewsForUsers.Controllers.AccountController">
+            <summary>
+            Account operations like registration
+            </summary>
+        </member>
+        <member name="M:NewsForUsers.Controllers.AccountController.Register(NewsForUsers.Models.UserModel)">
+            <summary>
+            Registration new user
+            </summary>
+            <param name="userModel">UserModel</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.AccountController.GetToken(NewsForUsers.Models.LoginUserModel)">
+            <summary>
+            Get Token for log in user
+            Data pass via application/x-www-form-urlencoded
+            </summary>
+            <param name="userModel">LoginUserModel</param>
+            <returns></returns>
+        </member>
+        <member name="T:NewsForUsers.Controllers.CollectionsController">
+            <summary>
+            User operations with collections controller
+            </summary>
+        </member>
+        <member name="M:NewsForUsers.Controllers.CollectionsController.GetCollections">
+            <summary>
+            Gets user collections informations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.CollectionsController.GetCollection(System.Int32)">
+            <summary>
+            Gets user collection informations
+            </summary>
+            <param name="id">Collection Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.CollectionsController.PutCollection(System.Int32,NewsForUsers.Models.Collection)">
+            <summary>
+            Update user collection information 
+            </summary>
+            <param name="id">collection id</param>
+            <param name="collection">collection</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.CollectionsController.PostCollection(NewsForUsers.Models.Collection)">
+            <summary>
+            Add new collection to user
+            </summary>
+            <param name="collection">new collection</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.CollectionsController.DeleteCollection(System.Int32)">
+            <summary>
+            Delete user collection
+            </summary>
+            <param name="id">collection id</param>
+            <returns></returns>
+        </member>
+        <member name="T:NewsForUsers.Controllers.SourcesController">
+            <summary>
+            Operations with feeds controller
+            </summary>
+        </member>
+        <member name="M:NewsForUsers.Controllers.SourcesController.GetSourcesByCollectionId(System.Int32)">
+            <summary>
+            Get feed link from user collection
+            </summary>
+            <param name="id">collection id</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.SourcesController.PostSource(System.Int32,NewsForUsers.Models.Source)">
+            <summary>
+            Add feed link to collection
+            </summary>
+            <param name="id">collection id</param>
+            <param name="source">feed source link</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.SourcesController.DeleteSourceFromCollection(System.Int32,System.Int32)">
+            <summary>
+            Delete feed link from collection 
+            </summary>
+            <param name="collectionId">collection id</param>
+            <param name="sourceId">feed source id</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.SourcesController.GetEntities(System.Int32)">
+            <summary>
+            Get news by collectionId 
+            </summary>
+            <param name="collectionId"> collection id</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Controllers.SourcesController.GetEntities(System.Int32,NewsForUsers.Controllers.PeriodModel)">
+            <summary>
+            Get news by collectionId and time period.
+            </summary>
+            <param name="collectionId">collection id</param>
+            <param name="period">PeriodModel</param>
+            <returns></returns>
+        </member>
+        <member name="M:NewsForUsers.Providers.SimpleAuthorizationServerProvider.GrantResourceOwnerCredentials(Microsoft.Owin.Security.OAuth.OAuthGrantResourceOwnerCredentialsContext)">
+            <summary>
+             Return token for authorized user
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

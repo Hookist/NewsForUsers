@@ -12,6 +12,7 @@ using System.Web.Http.Description;
 using NewsForUsers.Models;
 using Microsoft.AspNet.Identity;
 using System.Data.Entity.Migrations;
+using System.Web.Http.Tracing;
 
 namespace NewsForUsers.Controllers
 {
@@ -30,6 +31,9 @@ namespace NewsForUsers.Controllers
         [Authorize]
         public IQueryable<Collection> GetCollections()
         {
+            Configuration.Services.GetTraceWriter().Info(
+                Request, "CollectionsController", "Get the list of user collection");
+
             int userId = this.User.Identity.GetUserId<int>();
             return db.Collections.Where(c => c.UserId == userId);
         }
@@ -41,8 +45,13 @@ namespace NewsForUsers.Controllers
         /// <param name="id">Collection Id</param>
         /// <returns></returns>
         [ResponseType(typeof(Collection))]
+        [Authorize]
         public async Task<IHttpActionResult> GetCollection(int id)
         {
+
+            Configuration.Services.GetTraceWriter().Info(
+    Request, "CollectionsController", "Get user collection information by id");
+
             int userId = this.User.Identity.GetUserId<int>();
             
             Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Id == id).FirstOrDefault());
@@ -66,6 +75,9 @@ namespace NewsForUsers.Controllers
         [HttpPut]
         public async Task<IHttpActionResult> PutCollection(int id, Collection collection)
         {
+            Configuration.Services.GetTraceWriter().Info(
+        Request, "CollectionsController", "Update user collection");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -112,6 +124,9 @@ namespace NewsForUsers.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> PostCollection(Collection collection)
         {
+            Configuration.Services.GetTraceWriter().Info(
+            Request, "CollectionsController", "Add new collection to user");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -137,9 +152,12 @@ namespace NewsForUsers.Controllers
         /// <param name="id">collection id</param>
         /// <returns></returns>
         [ResponseType(typeof(Collection))]
+        [Authorize]
         [HttpDelete]
         public async Task<IHttpActionResult> DeleteCollection(int id)
         {
+            Configuration.Services.GetTraceWriter().Info(
+            Request, "CollectionsController", "Delete user collection");
             int userId = this.User.Identity.GetUserId<int>();
             Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Id == id).FirstOrDefault());
             if (collection == null)

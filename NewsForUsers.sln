@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsForUsers", "NewsForUsers\NewsForUsers.csproj", "{170F4538-FD3F-4EDA-97CD-6ED7486A2B68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsForUsers.Tests", "NewsForUsers.Tests\NewsForUsers.Tests.csproj", "{F5089A8D-5FBF-421A-B8D0-0EF2EEF1F935}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{170F4538-FD3F-4EDA-97CD-6ED7486A2B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{170F4538-FD3F-4EDA-97CD-6ED7486A2B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{170F4538-FD3F-4EDA-97CD-6ED7486A2B68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5089A8D-5FBF-421A-B8D0-0EF2EEF1F935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5089A8D-5FBF-421A-B8D0-0EF2EEF1F935}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5089A8D-5FBF-421A-B8D0-0EF2EEF1F935}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5089A8D-5FBF-421A-B8D0-0EF2EEF1F935}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

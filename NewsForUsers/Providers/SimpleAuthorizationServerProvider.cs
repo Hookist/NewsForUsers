@@ -17,6 +17,10 @@ namespace NewsForUsers.Providers
             context.Validated();
         }
 
+        /// <summary>
+        ///  Return token for authorized user
+        /// </summary>
+        /// <returns></returns>
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
 

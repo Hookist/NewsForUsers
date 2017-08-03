@@ -1,10 +1,10 @@
-﻿using NewsForUsers.Areas.HelpPage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Tracing;
 
 namespace NewsForUsers
 {
@@ -13,6 +13,11 @@ namespace NewsForUsers
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
+            config.EnableSystemDiagnosticsTracing();
+            SystemDiagnosticsTraceWriter traceWriter = config.EnableSystemDiagnosticsTracing();
+            traceWriter.IsVerbose = true;
+            traceWriter.MinimumLevel = TraceLevel.Debug;
+            traceWriter.TraceSource = new System.Diagnostics.TraceSource("NewsForUsers");
 
             // Web API routes
             config.MapHttpAttributeRoutes();
@@ -22,13 +27,7 @@ namespace NewsForUsers
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
-            config.Routes.MapHttpRoute(
-               name: "ActionApi",
-               routeTemplate: "api/{controller}/{action}",
-               defaults: new { id = RouteParameter.Optional }
-           );
-            config.SetDocumentationProvider(new XmlDocumentationProvider(
-    HttpContext.Current.Server.MapPath("~/App_Data/ApiDocumentations.xml")));
+
         }
     }
 }

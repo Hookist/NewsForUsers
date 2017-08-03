@@ -7,9 +7,9 @@ using System.Xml;
 
 namespace NewsForUsers.FeedFormaters
 {
-    public static class FeedHelper
+    public static class FeedHelper 
     {
-        public static SyndicationFeed GetSyndicationFeedData(string urlFeedLocation)
+        public static SyndicationFeed GetFeedData(string urlFeedLocation)
         {
             XmlReaderSettings settings = new XmlReaderSettings
             {
@@ -40,6 +40,7 @@ namespace NewsForUsers.FeedFormaters
                 if (rss.CanRead(reader))
                 {
                     rss.ReadFrom(reader);
+
                     return rss.Feed;
                 }
                 // neither?
