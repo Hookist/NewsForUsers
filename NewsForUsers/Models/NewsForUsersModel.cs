@@ -19,7 +19,6 @@ namespace NewsForUsers.Models
         public virtual DbSet<Entity> Entities { get; set; }
         public virtual DbSet<Source> Sources { get; set; }
         public virtual DbSet<SourceToCollection> SourceToCollections { get; set; }
-        public virtual DbSet<SourceType> SourceTypes { get; set; }
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -37,11 +36,6 @@ namespace NewsForUsers.Models
                 .HasMany(e => e.SourceToCollections)
                 .WithRequired(e => e.Source)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<SourceType>()
-                .HasMany(e => e.Sources);
-                //.WithRequired(e => e.SourceType)
-                //.WillCascadeOnDelete(false);
 
             modelBuilder.Entity<CustomUserRole>()
                 .HasKey(r => new { r.UserId, r.RoleId })

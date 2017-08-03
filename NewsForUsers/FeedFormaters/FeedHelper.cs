@@ -9,23 +9,14 @@ namespace NewsForUsers.FeedFormaters
 {
     public static class FeedHelper 
     {
-        public static SyndicationFeed GetFeedData(string urlFeedLocation)
+        public static SyndicationFeed GetSyndicationFeedData(string urlFeedLocation)
         {
-            XmlReaderSettings settings = new XmlReaderSettings
-            {
-                IgnoreWhitespace = true,
-                CheckCharacters = true,
-                CloseInput = true,
-                IgnoreComments = true,
-                IgnoreProcessingInstructions = true,
-            };
+
             if (String.IsNullOrEmpty(urlFeedLocation))
                 return null;
 
             using (XmlReader reader = XmlReader.Create(urlFeedLocation))
             {
-                if (reader.ReadState == ReadState.Initial)
-                    reader.MoveToContent();
 
                 Atom10FeedFormatter atom = new Atom10FeedFormatter();
                 // try to read it as an atom feed
@@ -43,6 +34,9 @@ namespace NewsForUsers.FeedFormaters
 
                     return rss.Feed;
                 }
+
+                //add new custom formatters 
+
                 // neither?
                 return null;
             }

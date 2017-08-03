@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using log4net;
+using Microsoft.AspNet.Identity;
 using NewsForUsers.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace NewsForUsers.Controllers
     /// </summary>
     public class AccountController : ApiController
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private AuthRepository _repo = null;
 
         public AccountController()
@@ -34,6 +36,7 @@ namespace NewsForUsers.Controllers
         [Route("api/account/register")]
         public async Task<IHttpActionResult> Register(UserModel userModel)
         {
+            Log.Debug("Registration new user");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -62,6 +65,7 @@ namespace NewsForUsers.Controllers
         [Route("api/Account/token")]
         public IHttpActionResult GetToken(LoginUserModel userModel)
         {
+            Log.Debug("Get Token for log in user");
             return Ok();
         }
 

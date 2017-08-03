@@ -107,11 +107,5 @@
             <param name="period">PeriodModel</param>
             <returns></returns>
         </member>
-        <member name="M:NewsForUsers.Providers.SimpleAuthorizationServerProvider.GrantResourceOwnerCredentials(Microsoft.Owin.Security.OAuth.OAuthGrantResourceOwnerCredentialsContext)">
-            <summary>
-             Return token for authorized user
-            </summary>
-            <returns></returns>
-        </member>
     </members>
 </doc>

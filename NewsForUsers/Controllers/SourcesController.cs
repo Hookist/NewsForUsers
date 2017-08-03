@@ -15,6 +15,7 @@ using System.Xml;
 using System.ServiceModel.Syndication;
 using NewsForUsers.FeedFormaters;
 using System.Web.Http.Tracing;
+using log4net;
 
 namespace NewsForUsers.Controllers
 {
@@ -24,6 +25,8 @@ namespace NewsForUsers.Controllers
     public class SourcesController : ApiController
     {
         private NewsForUsersModel db = new NewsForUsersModel();
+
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // GET: api/Sources/GetSourcesByCollectionId/5
         /// <summary>
@@ -36,9 +39,7 @@ namespace NewsForUsers.Controllers
         [Route("api/Sources/GetSourcesByCollectionId/{id}")]
         public IHttpActionResult GetSourcesByCollectionId(int id)
         {
-            Configuration.Services.GetTraceWriter().Info(
-        Request, "SourcesController", "Get feed sources in user collection");
-
+            Log.Debug("Get feed link from user collection");
             int userId = this.User.Identity.GetUserId<int>();
             Collection collection = db.Collections.Where(c => c.Id == id && c.UserId == userId).FirstOrDefault();
             if (collection == null)
@@ -66,9 +67,7 @@ namespace NewsForUsers.Controllers
         [Authorize]
         public async Task<IHttpActionResult> PostSource(int id, Source source)
         {
-            Configuration.Services.GetTraceWriter().Info(
-            Request, "SourcesController", "Add feed source to user collection");
-
+            Log.Debug("Add feed link to collection");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -115,7 +114,7 @@ namespace NewsForUsers.Controllers
             
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = source.Id }, source);
+            return Ok();
         }
 
         // DELETE: api/Sources/DeleteSourceFromCollection/5/2
@@ -130,9 +129,7 @@ namespace NewsForUsers.Controllers
         [Route("api/Sources/DeleteSourceFromCollection/{collectionId}/{sourceId}")]
         public async Task<IHttpActionResult> DeleteSourceFromCollection(int collectionId, int sourceId)
         {
-            Configuration.Services.GetTraceWriter().Info(
-            Request, "SourcesController", "Delete feed source in user collection");
-
+            Log.Debug("Delete feed link from collection ");
             int userId = this.User.Identity.GetUserId<int>();
             if(!await db.IsUserHasCollection(collectionId, userId))
             {
@@ -161,9 +158,7 @@ namespace NewsForUsers.Controllers
         [Route("api/Sources/GetNewsByCollectionId/{collectionId}")]
         public async Task<IHttpActionResult> GetEntities(int collectionId)
         {
-            Configuration.Services.GetTraceWriter().Info(
-           Request, "SourcesController", "Get feeds news in user collection");
-
+            Log.Debug("Get news by collectionId ");
             int userId = this.User.Identity.GetUserId<int>();
 
             if(!await db.IsUserHasCollection(collectionId, userId))
@@ -197,9 +192,7 @@ namespace NewsForUsers.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> GetEntities(int collectionId, PeriodModel period)
         {
-            Configuration.Services.GetTraceWriter().Info(
-          Request, "SourcesController", "Get feeds news in user collection with time period");
-
+            Log.Debug("Get news by collectionId and time period");
             int userId = this.User.Identity.GetUserId<int>();
 
             if (!ModelState.IsValid)

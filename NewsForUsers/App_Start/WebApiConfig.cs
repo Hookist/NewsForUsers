@@ -13,11 +13,7 @@ namespace NewsForUsers
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-            config.EnableSystemDiagnosticsTracing();
-            SystemDiagnosticsTraceWriter traceWriter = config.EnableSystemDiagnosticsTracing();
-            traceWriter.IsVerbose = true;
-            traceWriter.MinimumLevel = TraceLevel.Debug;
-            traceWriter.TraceSource = new System.Diagnostics.TraceSource("NewsForUsers");
+            log4net.Config.XmlConfigurator.Configure();
 
             // Web API routes
             config.MapHttpAttributeRoutes();

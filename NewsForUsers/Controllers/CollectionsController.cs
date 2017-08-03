@@ -13,6 +13,7 @@ using NewsForUsers.Models;
 using Microsoft.AspNet.Identity;
 using System.Data.Entity.Migrations;
 using System.Web.Http.Tracing;
+using log4net;
 
 namespace NewsForUsers.Controllers
 {
@@ -22,6 +23,7 @@ namespace NewsForUsers.Controllers
     public class CollectionsController : ApiController
     {
         private NewsForUsersModel db = new NewsForUsersModel();
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // GET: api/Collections
         /// <summary>
@@ -31,9 +33,7 @@ namespace NewsForUsers.Controllers
         [Authorize]
         public IQueryable<Collection> GetCollections()
         {
-            Configuration.Services.GetTraceWriter().Info(
-                Request, "CollectionsController", "Get the list of user collection");
-
+            Log.Debug("Gets user collections informations");
             int userId = this.User.Identity.GetUserId<int>();
             return db.Collections.Where(c => c.UserId == userId);
         }
@@ -48,10 +48,7 @@ namespace NewsForUsers.Controllers
         [Authorize]
         public async Task<IHttpActionResult> GetCollection(int id)
         {
-
-            Configuration.Services.GetTraceWriter().Info(
-    Request, "CollectionsController", "Get user collection information by id");
-
+            Log.Debug("Gets user collection informations");
             int userId = this.User.Identity.GetUserId<int>();
             
             Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Id == id).FirstOrDefault());
@@ -75,9 +72,7 @@ namespace NewsForUsers.Controllers
         [HttpPut]
         public async Task<IHttpActionResult> PutCollection(int id, Collection collection)
         {
-            Configuration.Services.GetTraceWriter().Info(
-        Request, "CollectionsController", "Update user collection");
-
+            Log.Debug("Update user collection information ");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -124,9 +119,7 @@ namespace NewsForUsers.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> PostCollection(Collection collection)
         {
-            Configuration.Services.GetTraceWriter().Info(
-            Request, "CollectionsController", "Add new collection to user");
-
+            Log.Debug("Add new collection to user");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -156,8 +149,7 @@ namespace NewsForUsers.Controllers
         [HttpDelete]
         public async Task<IHttpActionResult> DeleteCollection(int id)
         {
-            Configuration.Services.GetTraceWriter().Info(
-            Request, "CollectionsController", "Delete user collection");
+            Log.Debug("Delete user collection");
             int userId = this.User.Identity.GetUserId<int>();
             Collection collection = await Task.Run(() => db.Collections.Where(c => c.UserId == userId && c.Id == id).FirstOrDefault());
             if (collection == null)

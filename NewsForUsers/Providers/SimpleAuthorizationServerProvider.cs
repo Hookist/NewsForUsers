@@ -17,10 +17,6 @@ namespace NewsForUsers.Providers
             context.Validated();
         }
 
-        /// <summary>
-        ///  Return token for authorized user
-        /// </summary>
-        /// <returns></returns>
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
 
@@ -30,12 +26,12 @@ namespace NewsForUsers.Providers
             using (AuthRepository _repo = new AuthRepository())
             {
                 ApplicationUser user = await _repo.FindUser(context.UserName, context.Password);
-                userId = user.Id.ToString();
                 if (user == null)
                 {
                     context.SetError("invalid_grant", "The user name or password is incorrect.");
                     return;
                 }
+                userId = user.Id.ToString();
             }
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
