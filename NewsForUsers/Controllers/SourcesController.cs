@@ -14,14 +14,23 @@ using Microsoft.AspNet.Identity;
 using System.Xml;
 using NewsForUsers.Readers;
 using System.ServiceModel.Syndication;
+using NewsForUsers.FeedFormaters;
 
 namespace NewsForUsers.Controllers
 {
+    /// <summary>
+    /// Operations with feeds controller
+    /// </summary>
     public class SourcesController : ApiController
     {
         private NewsForUsersModel db = new NewsForUsersModel();
 
-        // GET: api/Sources
+        // GET: api/Sources/GetSourcesByCollectionId/5
+        /// <summary>
+        /// Get feed link from user collection
+        /// </summary>
+        /// <param name="id">collection id</param>
+        /// <returns></returns>
         [ResponseType(typeof(List<Source>))]
         [Authorize]
         [Route("api/Sources/GetSourcesByCollectionId/{id}")]
@@ -41,57 +50,13 @@ namespace NewsForUsers.Controllers
             return Ok(sources);
         }
 
-        // GET: api/Sources/5
-        [ResponseType(typeof(Source))]
-        public async Task<IHttpActionResult> GetSource(int id)
-        {
-            int userId = this.User.Identity.GetUserId<int>();
-
-            Source source = await db.Sources.FindAsync(id);
-            if (source == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(source);
-        }
-
-        // PUT: api/Sources/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutSource(int id, Source source)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != source.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(source).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SourceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/Sources
+        // POST: api/Sources/AddSourceToCollection/5
+        /// <summary>
+        /// Add feed link to collection
+        /// </summary>
+        /// <param name="id">collection id</param>
+        /// <param name="source">feed source link</param>
+        /// <returns></returns>
         [HttpPost]
         [ResponseType(typeof(Source))]
         [Route("api/Sources/AddSourceToCollection/{id}")]
@@ -105,18 +70,18 @@ namespace NewsForUsers.Controllers
             // get userId
             int userId = this.User.Identity.GetUserId<int>();
             // check if user has collection with this id
-            if (!await IsUserHasCollection(id, userId)) 
+            if (!await db.IsUserHasCollection(id, userId)) 
             {
                 return BadRequest("You don't have collection with this id");
             }
             // check if collection has this source
-            if(await IsCollectionHasSource(id, source.Link))
+            if(await db.IsCollectionHasSource(id, source.Link))
             {
                 return BadRequest("You already have source with the same link");
             }
             
             string sourceTypeName = String.Empty;
-            SyndicationFeed feed = GetSyndicationFeedData(source.Link, ref sourceTypeName);
+            SyndicationFeed feed = FeedHelper.GetSyndicationFeedData(source.Link);
             // check if db has this source
             var sourceInDb = await db.Sources.FirstOrDefaultAsync(s => s.Link == source.Link);
             if (sourceInDb == null)
@@ -131,7 +96,7 @@ namespace NewsForUsers.Controllers
                     db.Entities.Add(new Entity()
                     {
                         Title = item.Title.Text,
-                        PublicationDate = item.PublishDate.ToString(),
+                        PublicationDate = item.PublishDate,
                         Link = item.Links[0].Uri.ToString(),
                         SourceId = source.Id
                     });
@@ -147,30 +112,25 @@ namespace NewsForUsers.Controllers
             return CreatedAtRoute("DefaultApi", new { id = source.Id }, source);
         }
 
-        private int GetSourceTypeId(string sourceTypeName)
-        {
-            List<SourceType> sourceTypes = db.SourceTypes.ToList();
-            foreach(SourceType st in sourceTypes)
-            {
-                if (st.TypeName == sourceTypeName)
-                    return st.Id;
-            }
-            return 0;
-        }
-
-        // DELETE: api/Sources/5
+        // DELETE: api/Sources/DeleteSourceFromCollection/5/2
+        /// <summary>
+        /// Delete feed link from collection 
+        /// </summary>
+        /// <param name="collectionId">collection id</param>
+        /// <param name="sourceId">feed source id</param>
+        /// <returns></returns>
         [ResponseType(typeof(Source))]
         [Authorize]
         [Route("api/Sources/DeleteSourceFromCollection/{collectionId}/{sourceId}")]
         public async Task<IHttpActionResult> DeleteSourceFromCollection(int collectionId, int sourceId)
         {
             int userId = this.User.Identity.GetUserId<int>();
-            if(!await IsUserHasCollection(collectionId, userId))
+            if(!await db.IsUserHasCollection(collectionId, userId))
             {
                 return BadRequest("You don't have collection with this id");
             }
 
-            if (!await IsCollectionHasSource(collectionId, sourceId))
+            if (!await db.IsCollectionHasSource(collectionId, sourceId))
             {
                 return BadRequest("Collection doesn't have source with this id");
             }
@@ -181,6 +141,12 @@ namespace NewsForUsers.Controllers
             return Ok(sourceToCollectionToDelete);
         }
 
+        // GET: api/Sources/GetNewsByCollectionId/5
+        /// <summary>
+        /// Get news by collectionId 
+        /// </summary>
+        /// <param name="collectionId"> collection id</param>
+        /// <returns></returns>
         [ResponseType(typeof(IEnumerable<Entity>))]
         [Authorize]
         [Route("api/Sources/GetNewsByCollectionId/{collectionId}")]
@@ -188,7 +154,7 @@ namespace NewsForUsers.Controllers
         {
             int userId = this.User.Identity.GetUserId<int>();
 
-            if(!await IsUserHasCollection(collectionId, userId))
+            if(!await db.IsUserHasCollection(collectionId, userId))
             {
                 BadRequest("You don't have collection with this id");
             }
@@ -200,6 +166,52 @@ namespace NewsForUsers.Controllers
                            where c.Id == collectionId
                            select e);
             if(entities.Count() == 0)
+            {
+                BadRequest("Collection empty");
+            }
+            return Ok(entities);
+        }
+
+        // POST: api/Sources/GetNewsByCollectionIdAndPeriod/5
+        /// <summary>
+        /// Get news by collectionId and time period.
+        /// </summary>
+        /// <param name="collectionId">collection id</param>
+        /// <param name="period"> Start date and end date for selecting </param>
+        /// <returns></returns>
+        [ResponseType(typeof(IEnumerable<Entity>))]
+        [Authorize]
+        [Route("api/Sources/GetNewsByCollectionIdAndPeriod/{collectionId}")]
+        [HttpPost]
+        public async Task<IHttpActionResult> GetEntities(int collectionId, PeriodModel period)
+        {
+            int userId = this.User.Identity.GetUserId<int>();
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!await db.IsUserHasCollection(collectionId, userId))
+            {
+                BadRequest("You don't have collection with this id");
+            }
+            if(period.startDate == null || period.endDate == null)
+            {
+                BadRequest("Wrong date format");
+            }
+            if(period.startDate > period.endDate)
+            {
+                BadRequest("Strart date larger then End date");
+            }
+
+            var entities = (from c in db.Collections
+                            join sc in db.SourceToCollections on c.Id equals sc.CollectionId
+                            join s in db.Sources on sc.SourceId equals s.Id
+                            join e in db.Entities on s.Id equals e.SourceId
+                            where c.Id == collectionId && e.PublicationDate >= period.startDate
+                            && e.PublicationDate <= period.endDate
+                            select e);
+            if (entities.Count() == 0)
             {
                 BadRequest("Collection empty");
             }
@@ -220,109 +232,11 @@ namespace NewsForUsers.Controllers
             return db.Sources.Count(e => e.Id == id) > 0;
         }
 
-        private SyndicationFeed GetSyndicationFeedData(string urlFeedLocation, ref string feedTypeName)
-        {
-            XmlReaderSettings settings = new XmlReaderSettings
-            {
-                IgnoreWhitespace = true,
-                CheckCharacters = true,
-                CloseInput = true,
-                IgnoreComments = true,
-                IgnoreProcessingInstructions = true,
-            };
-            if (String.IsNullOrEmpty(urlFeedLocation))
-                return null;
+    }
 
-            using (XmlReader reader = XmlReader.Create(urlFeedLocation))
-            {
-                if (reader.ReadState == ReadState.Initial)
-                    reader.MoveToContent();
-
-                Atom10FeedFormatter atom = new Atom10FeedFormatter();
-                // try to read it as an atom feed
-                if (atom.CanRead(reader))
-                {
-                    atom.ReadFrom(reader);
-                    feedTypeName = "Atom";
-                    return atom.Feed;
-                }
-
-                Rss20FeedFormatter rss = new Rss20FeedFormatter();
-                // try reading it as an rss feed
-                if (rss.CanRead(reader))
-                {
-                    rss.ReadFrom(reader);
-                    feedTypeName = "RSS";
-                    return rss.Feed;
-                }
-                // neither?
-                return null;
-            }
-        }
-
-        async Task<bool> IsUserHasCollection(int collectionId, int userId)
-        {
-            Collection collection = await db.Collections.Where(c => c.Id == collectionId && c.UserId == userId).FirstOrDefaultAsync();
-            if (collection == null)
-                return false;
-            else
-                return true;
-        }
-
-        async Task<bool> IsCollectionHasSource(int collectionId, string link)
-        {
-            var userSourceInDb = await (from sc in db.SourceToCollections
-                                        join c in db.Collections on sc.CollectionId equals c.Id
-                                        join s in db.Sources on sc.SourceId equals s.Id
-                                        where c.Id == collectionId && s.Link == link
-                                        select s).FirstOrDefaultAsync();
-            if (userSourceInDb == null)
-                return false;
-            else
-                return true;
-        }
-
-        async Task<bool> IsCollectionHasSource(int collectionId, int sourceId)
-        {
-            var userSourceInDb = await (from sc in db.SourceToCollections
-                                        join c in db.Collections on sc.CollectionId equals c.Id
-                                        join s in db.Sources on sc.SourceId equals s.Id
-                                        where c.Id == collectionId && s.Id == sourceId
-                                        select s).FirstOrDefaultAsync();
-            if (userSourceInDb == null)
-                return false;
-            else
-                return true;
-        }
-
-        string CheckFeed(string urlFeedLocation)
-        {
-            if (String.IsNullOrEmpty(urlFeedLocation))
-                return null;
-
-            var sourceTypes = db.SourceTypes.ToList();
-
-            using (XmlReader reader = XmlReader.Create(urlFeedLocation))
-            {
-                if (reader.ReadState == ReadState.Initial)
-                    reader.MoveToContent();
-
-                Atom10FeedFormatter atom = new Atom10FeedFormatter();
-                // try to read it as an atom feed
-                if (atom.CanRead(reader))
-                {
-                    return "Atom";
-                }
-
-                Rss20FeedFormatter rss = new Rss20FeedFormatter();
-                // try reading it as an rss feed
-                if (rss.CanRead(reader))
-                {
-                    return "RSS";
-                }
-                // neither?
-                return "Undefined";
-            }
-        }
+    public class PeriodModel
+    {
+        public DateTimeOffset startDate { get; set; }
+        public DateTimeOffset endDate { get; set; }
     }
 }

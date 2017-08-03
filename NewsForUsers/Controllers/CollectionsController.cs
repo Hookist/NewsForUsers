@@ -15,11 +15,18 @@ using System.Data.Entity.Migrations;
 
 namespace NewsForUsers.Controllers
 {
+    /// <summary>
+    /// User operations with collections controller
+    /// </summary>
     public class CollectionsController : ApiController
     {
         private NewsForUsersModel db = new NewsForUsersModel();
 
         // GET: api/Collections
+        /// <summary>
+        /// Gets user collections informations
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public IQueryable<Collection> GetCollections()
         {
@@ -28,6 +35,11 @@ namespace NewsForUsers.Controllers
         }
 
         // GET: api/Collections/5
+        /// <summary>
+        /// Gets user collection informations
+        /// </summary>
+        /// <param name="id">Collection Id</param>
+        /// <returns></returns>
         [ResponseType(typeof(Collection))]
         public async Task<IHttpActionResult> GetCollection(int id)
         {
@@ -43,6 +55,12 @@ namespace NewsForUsers.Controllers
         }
 
         // PUT: api/Collections/5
+        /// <summary>
+        /// Update user collection information 
+        /// </summary>
+        /// <param name="id">collection id</param>
+        /// <param name="collection">collection</param>
+        /// <returns></returns>
         [Authorize]
         [ResponseType(typeof(void))]
         [HttpPut]
@@ -84,6 +102,11 @@ namespace NewsForUsers.Controllers
         }
 
         // POST: api/Collections
+        /// <summary>
+        /// Add new collection to user
+        /// </summary>
+        /// <param name="collection">new collection</param>
+        /// <returns></returns>
         [Authorize]
         [ResponseType(typeof(Collection))]
         [HttpPost]
@@ -108,6 +131,11 @@ namespace NewsForUsers.Controllers
         }
 
         // DELETE: api/Collections/5
+        /// <summary>
+        /// Delete user collection
+        /// </summary>
+        /// <param name="id">collection id</param>
+        /// <returns></returns>
         [ResponseType(typeof(Collection))]
         [HttpDelete]
         public async Task<IHttpActionResult> DeleteCollection(int id)

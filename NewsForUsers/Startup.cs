@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 [assembly: OwinStartup(typeof(NewsForUsers.Startup))]
 namespace NewsForUsers
@@ -22,6 +23,7 @@ namespace NewsForUsers
             WebApiConfig.Register(config);
             app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
             app.UseWebApi(config);
+
         }
 
         public void ConfigureOAuth(IAppBuilder app)

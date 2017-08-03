@@ -1,7 +1,10 @@
-﻿using System;
+﻿using NewsForUsers.Areas.HelpPage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace NewsForUsers
 {
@@ -19,17 +22,13 @@ namespace NewsForUsers
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
-            //config.Routes.MapHttpRoute(
-            //    name: "NameApi",
-            //    routeTemplate: "api/{controller}/{name}",
-            //    defaults: new { id = RouteParameter.Optional }
-            //);
             config.Routes.MapHttpRoute(
                name: "ActionApi",
                routeTemplate: "api/{controller}/{action}",
                defaults: new { id = RouteParameter.Optional }
            );
-
+            config.SetDocumentationProvider(new XmlDocumentationProvider(
+    HttpContext.Current.Server.MapPath("~/App_Data/ApiDocumentations.xml")));
         }
     }
 }

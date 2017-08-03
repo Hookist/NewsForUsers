@@ -24,8 +24,7 @@ namespace NewsForUsers.Models
         [StringLength(300)]
         public string Link { get; set; }
 
-        [StringLength(500)]
-        public string PublicationDate { get; set; }
+        public DateTimeOffset? PublicationDate { get; set; }
 
         [JsonIgnore]
         public int SourceId { get; set; }

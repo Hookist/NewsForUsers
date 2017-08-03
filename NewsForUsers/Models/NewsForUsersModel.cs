@@ -5,6 +5,7 @@ namespace NewsForUsers.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using Microsoft.AspNet.Identity.EntityFramework;
+    using System.Threading.Tasks;
 
     public partial class NewsForUsersModel : IdentityDbContext<ApplicationUser,
         CustomRole, int, CustomUserLogin, CustomUserRole, CustomUserClaim>
@@ -50,5 +51,41 @@ namespace NewsForUsers.Models
                 .HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
                 .ToTable("AspNetUserLogins");
         }
+
+        public async Task<bool> IsUserHasCollection(int collectionId, int userId)
+        {
+            Collection collection = await Collections.Where(c => c.Id == collectionId && c.UserId == userId).FirstOrDefaultAsync();
+            if (collection == null)
+                return false;
+            else
+                return true;
+        }
+
+        public async Task<bool> IsCollectionHasSource(int collectionId, string link)
+        {
+            var userSourceInDb = await (from sc in SourceToCollections
+                                        join c in Collections on sc.CollectionId equals c.Id
+                                        join s in Sources on sc.SourceId equals s.Id
+                                        where c.Id == collectionId && s.Link == link
+                                        select s).FirstOrDefaultAsync();
+            if (userSourceInDb == null)
+                return false;
+            else
+                return true;
+        }
+
+        public async Task<bool> IsCollectionHasSource(int collectionId, int sourceId)
+        {
+            var userSourceInDb = await (from sc in SourceToCollections
+                                        join c in Collections on sc.CollectionId equals c.Id
+                                        join s in Sources on sc.SourceId equals s.Id
+                                        where c.Id == collectionId && s.Id == sourceId
+                                        select s).FirstOrDefaultAsync();
+            if (userSourceInDb == null)
+                return false;
+            else
+                return true;
+        }
     }
+
 }

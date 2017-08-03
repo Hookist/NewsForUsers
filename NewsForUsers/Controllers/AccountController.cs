@@ -11,6 +11,9 @@ using System.Web.Http;
 
 namespace NewsForUsers.Controllers
 {
+    /// <summary>
+    /// Account operations like registration
+    /// </summary>
     public class AccountController : ApiController
     {
         private AuthRepository _repo = null;
@@ -21,6 +24,11 @@ namespace NewsForUsers.Controllers
         }
 
         // POST api/Account/Register
+        /// <summary>
+        /// Registration new user
+        /// </summary>
+        /// <param name="userModel">new user information</param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("api/account/register")]
@@ -42,12 +50,7 @@ namespace NewsForUsers.Controllers
 
             return Ok();
         }
-        [HttpGet]
-        [Authorize]
-        public async Task<IHttpActionResult> Get()
-        {
-            return Ok("it works " + this.User.Identity.GetUserId().ToString());
-        }
+
 
         protected override void Dispose(bool disposing)
         {

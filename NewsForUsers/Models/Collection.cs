@@ -23,6 +23,7 @@ namespace NewsForUsers.Models
 
         public int UserId { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<SourceToCollection> SourceToCollections { get; set; }
     }
 }
