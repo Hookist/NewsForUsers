@@ -19,7 +19,6 @@ namespace NewsForUsers.Providers
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
             string userId;
@@ -40,7 +39,6 @@ namespace NewsForUsers.Providers
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
 
             context.Validated(identity);
-
         }
     }
 }

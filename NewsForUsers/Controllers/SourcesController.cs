@@ -75,18 +75,23 @@ namespace NewsForUsers.Controllers
             // get userId
             int userId = this.User.Identity.GetUserId<int>();
             // check if user has collection with this id
-            if (!await db.IsUserHasCollection(id, userId)) 
+            if (!await db.IsUserHasCollection(id, userId))
             {
                 return BadRequest("You don't have collection with this id");
             }
             // check if collection has this source
-            if(await db.IsCollectionHasSource(id, source.Link))
+            if (await db.IsCollectionHasSource(id, source.Link))
             {
                 return BadRequest("You already have source with the same link");
             }
-            
+
             string sourceTypeName = String.Empty;
-            SyndicationFeed feed = FeedHelper.GetSyndicationFeedData(source.Link);
+            List<Entity> entities = FeedHelper.GetEntitiesFromFeed(source.Link).ToList();
+            if (entities == null)
+            {
+                return BadRequest("Wrong feed format or url");
+            }
+
             // check if db has this source
             var sourceInDb = await db.Sources.FirstOrDefaultAsync(s => s.Link == source.Link);
             if (sourceInDb == null)
@@ -96,13 +101,13 @@ namespace NewsForUsers.Controllers
                 var lastAddedSource = await db.Sources.OrderByDescending(s => s.Id).FirstOrDefaultAsync();
                 db.SourceToCollections.Add(new SourceToCollection() { CollectionId = id, SourceId = lastAddedSource.Id });
 
-                foreach (SyndicationItem item in feed.Items)
+                foreach (var item in entities)
                 {
                     db.Entities.Add(new Entity()
                     {
-                        Title = item.Title.Text,
-                        PublicationDate = item.PublishDate,
-                        Link = item.Links[0].Uri.ToString(),
+                        Title = item.Title,
+                        PublicationDate = item.PublicationDate,
+                        Link = item.Link,
                         SourceId = source.Id
                     });
                 }
@@ -111,7 +116,7 @@ namespace NewsForUsers.Controllers
             {
                 db.SourceToCollections.Add(new SourceToCollection() { CollectionId = id, SourceId = sourceInDb.Id });
             }
-            
+
             await db.SaveChangesAsync();
 
             return Ok();
@@ -131,7 +136,7 @@ namespace NewsForUsers.Controllers
         {
             Log.Debug("Delete feed link from collection ");
             int userId = this.User.Identity.GetUserId<int>();
-            if(!await db.IsUserHasCollection(collectionId, userId))
+            if (!await db.IsUserHasCollection(collectionId, userId))
             {
                 return BadRequest("You don't have collection with this id");
             }
@@ -161,18 +166,20 @@ namespace NewsForUsers.Controllers
             Log.Debug("Get news by collectionId ");
             int userId = this.User.Identity.GetUserId<int>();
 
-            if(!await db.IsUserHasCollection(collectionId, userId))
+            if (!await db.IsUserHasCollection(collectionId, userId))
             {
                 BadRequest("You don't have collection with this id");
             }
 
-            var entities = (from c in db.Collections
-                           join sc in db.SourceToCollections on c.Id equals sc.CollectionId
-                           join s in db.Sources on sc.SourceId equals s.Id
-                           join e in db.Entities on s.Id equals e.SourceId
-                           where c.Id == collectionId
-                           select e);
-            if(entities.Count() == 0)
+            var entities = (
+                from c in db.Collections
+                join sc in db.SourceToCollections on c.Id equals sc.CollectionId
+                join s in db.Sources on sc.SourceId equals s.Id
+                join e in db.Entities on s.Id equals e.SourceId
+                where c.Id == collectionId
+                select e
+            );
+            if (entities.Count() == 0)
             {
                 BadRequest("Collection empty");
             }
@@ -203,22 +210,24 @@ namespace NewsForUsers.Controllers
             {
                 BadRequest("You don't have collection with this id");
             }
-            if(period.startDate == null || period.endDate == null)
+            if (period.startDate == null || period.endDate == null)
             {
                 BadRequest("Wrong date format");
             }
-            if(period.startDate > period.endDate)
+            if (period.startDate > period.endDate)
             {
                 BadRequest("Strart date larger then End date");
             }
 
-            var entities = (from c in db.Collections
-                            join sc in db.SourceToCollections on c.Id equals sc.CollectionId
-                            join s in db.Sources on sc.SourceId equals s.Id
-                            join e in db.Entities on s.Id equals e.SourceId
-                            where c.Id == collectionId && e.PublicationDate >= period.startDate
-                            && e.PublicationDate <= period.endDate
-                            select e);
+            var entities = (
+                from c in db.Collections
+                join sc in db.SourceToCollections on c.Id equals sc.CollectionId
+                join s in db.Sources on sc.SourceId equals s.Id
+                join e in db.Entities on s.Id equals e.SourceId
+                where c.Id == collectionId && e.PublicationDate >= period.startDate
+                && e.PublicationDate <= period.endDate
+                select e
+            );
             if (entities.Count() == 0)
             {
                 BadRequest("Collection empty");

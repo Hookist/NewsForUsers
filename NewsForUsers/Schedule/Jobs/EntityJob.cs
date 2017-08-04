@@ -22,16 +22,16 @@ namespace NewsForUsers.Schedule.Jobs
             {
                 DateTimeOffset? entityLastDateTime = db.Entities.Where(e => e.SourceId == source.Id).Max(e => e.PublicationDate);
 
-                SyndicationFeed feed = FeedHelper.GetSyndicationFeedData(source.Link);
-                foreach(SyndicationItem item in feed.Items)
+                List<Entity> entities = FeedHelper.GetEntitiesFromFeed(source.Link).ToList();
+                foreach(Entity item in entities)
                 {
-                    if(item.PublishDate > entityLastDateTime || entityLastDateTime == null)
+                    if(item.PublicationDate > entityLastDateTime || entityLastDateTime == null)
                     {
                         db.Entities.Add(new Entity()
                         {
-                            Title = item.Title.Text,
-                            PublicationDate = item.PublishDate,
-                            Link = item.Links[0].Uri.ToString(),
+                            Title = item.Text,
+                            PublicationDate = item.PublicationDate,
+                            Link = item.Link,
                             SourceId = source.Id
                         });
                     }

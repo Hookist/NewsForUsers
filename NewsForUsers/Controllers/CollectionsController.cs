@@ -31,11 +31,18 @@ namespace NewsForUsers.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        public IQueryable<Collection> GetCollections()
+        [ResponseType(typeof(IQueryable<Collection>))]
+        public IHttpActionResult GetCollections()
         {
             Log.Debug("Gets user collections informations");
-            int userId = this.User.Identity.GetUserId<int>();
-            return db.Collections.Where(c => c.UserId == userId);
+            int? userId = this.User.Identity.GetUserId<int>();
+
+            if(userId == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            return Ok(db.Collections.Where(c => c.UserId == userId));
         }
 
         // GET: api/Collections/5

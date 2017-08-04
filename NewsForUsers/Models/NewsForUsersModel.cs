@@ -57,11 +57,14 @@ namespace NewsForUsers.Models
 
         public async Task<bool> IsCollectionHasSource(int collectionId, string link)
         {
-            var userSourceInDb = await (from sc in SourceToCollections
-                                        join c in Collections on sc.CollectionId equals c.Id
-                                        join s in Sources on sc.SourceId equals s.Id
-                                        where c.Id == collectionId && s.Link == link
-                                        select s).FirstOrDefaultAsync();
+            var userSourceInDb = await (
+                from sc in SourceToCollections
+                join c in Collections on sc.CollectionId equals c.Id
+                join s in Sources on sc.SourceId equals s.Id
+                where c.Id == collectionId && s.Link == link
+                select s)
+                .FirstOrDefaultAsync();
+
             if (userSourceInDb == null)
                 return false;
             else
@@ -70,11 +73,14 @@ namespace NewsForUsers.Models
 
         public async Task<bool> IsCollectionHasSource(int collectionId, int sourceId)
         {
-            var userSourceInDb = await (from sc in SourceToCollections
-                                        join c in Collections on sc.CollectionId equals c.Id
-                                        join s in Sources on sc.SourceId equals s.Id
-                                        where c.Id == collectionId && s.Id == sourceId
-                                        select s).FirstOrDefaultAsync();
+            var userSourceInDb = await (
+                from sc in SourceToCollections
+                join c in Collections on sc.CollectionId equals c.Id
+                join s in Sources on sc.SourceId equals s.Id
+                where c.Id == collectionId && s.Id == sourceId
+                select s)
+                .FirstOrDefaultAsync();
+
             if (userSourceInDb == null)
                 return false;
             else

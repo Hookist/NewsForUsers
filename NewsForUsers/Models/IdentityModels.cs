@@ -18,19 +18,11 @@ namespace NewsForUsers.Models
     {
         public ApplicationUser()
         {
-            LastVisitDate = DateTime.Now;
+            RegistrationDate = DateTime.Now;
         }
 
-        //public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
-        //{
-        //    // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-        //    var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ExternalBearer);
-        //    // Add custom user claims here
-        //    return userIdentity;
-        //}
-
         [Required]
-        public DateTime LastVisitDate { get; set; }
+        public DateTime RegistrationDate { get; set; }
     }
 
     public class CustomUserClaim : IdentityUserClaim<int> { }

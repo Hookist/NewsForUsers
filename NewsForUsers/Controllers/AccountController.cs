@@ -63,12 +63,11 @@ namespace NewsForUsers.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("api/Account/token")]
-        public IHttpActionResult GetToken(LoginUserModel userModel)
+        public IHttpActionResult GetToken()
         {
             Log.Debug("Get Token for log in user");
             return Ok();
         }
-
 
         protected override void Dispose(bool disposing)
         {
