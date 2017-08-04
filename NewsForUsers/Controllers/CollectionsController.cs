@@ -164,6 +164,11 @@ namespace NewsForUsers.Controllers
                 return NotFound();
             }
             db.Collections.Remove(collection);
+
+            var sourceToCollection = db.SourceToCollections.Where(sc => sc.CollectionId == collection.Id);
+            if(sourceToCollection != null)
+                db.SourceToCollections.RemoveRange(sourceToCollection);
+
             await db.SaveChangesAsync();
 
             return Ok(collection);
