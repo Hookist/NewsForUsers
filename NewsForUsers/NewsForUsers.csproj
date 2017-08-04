@@ -214,6 +214,10 @@
     <Compile Include="Migrations\201708031819484_SomeChangesMigration.Designer.cs">
       <DependentUpon>201708031819484_SomeChangesMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708041209369_AddRegistDateMigration.cs" />
+    <Compile Include="Migrations\201708041209369_AddRegistDateMigration.Designer.cs">
+      <DependentUpon>201708041209369_AddRegistDateMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\AuthRepository.cs" />
@@ -263,6 +267,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708031819484_SomeChangesMigration.resx">
       <DependentUpon>201708031819484_SomeChangesMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708041209369_AddRegistDateMigration.resx">
+      <DependentUpon>201708041209369_AddRegistDateMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
